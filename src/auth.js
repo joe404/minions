@@ -9,6 +9,7 @@ module.exports = {
     pretendRequest(user, pass, (res) => {
       if (res.authenticated) {
         localStorage.token = res.token;
+        localStorage.user = user;
         if (cb) cb(true);
         this.onChange(true);
       } else {
@@ -22,8 +23,13 @@ module.exports = {
     return localStorage.token;
   },
 
+  getUser() {
+    return localStorage.user;
+  },
+
   logout(cb) {
     delete localStorage.token;
+    delete localStorage.user;
     if (cb) cb();
     this.onChange(false);
   },
@@ -32,12 +38,16 @@ module.exports = {
     return !!localStorage.token;
   },
 
+  canAdmin() {
+    return (localStorage.user === 'admin');
+  },
+
   onChange() {}
 }
 
 function pretendRequest(user, pass, cb) {
   setTimeout(() => {
-    if (user === 'joe' && pass === '404') {
+    if ((user === 'joe' || user === 'admin') && pass === '404') {
       cb({
         authenticated: true,
         token: Math.random().toString(36).substring(7)

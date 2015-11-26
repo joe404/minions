@@ -1,8 +1,22 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {Router,Route,Link,History} from 'react-router';
+import {Router,Route,IndexRoute,Link,History} from 'react-router';
 import {createHashHistory,useBasename} from 'history';
 import auth from './auth';
+
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+
+import Dashboard from './components/Dashboard/Dashboard';
+import Apis from './components/Apis/Apis';
+import Apps from './components/Apps/Apps';
+import Developers from './components/Developers/Developers';
+import Help from './components/Help/Help';
+import Admin from './components/Admin/Admin';
+import Profile from './components/Profile/Profile';
+import Login from './components/Login/Login';
+import Logout from './components/Logout/Logout';
+import Http403 from './components/Http403/Http403';
 
 const history = useBasename(createHashHistory)({
   basename: '/',
@@ -30,91 +44,11 @@ const App = React.createClass({
   render() {
     return (
       <div>
-        <ul>
-          <li>
-            {this.state.loggedIn ? (
-              <Link to="/logout">Log out</Link>
-            ) : (
-              <Link to="/login">Sign in</Link>
-            )}
-          </li>
-          <li><Link to="/about">About</Link></li>
-          <li><Link to="/dashboard">Dashboard</Link> (authenticated)</li>
-        </ul>
+        <Header/>
         {this.props.children}
+        <Footer/>
       </div>
     );
-  }
-});
-
-const Dashboard = React.createClass({
-  render() {
-    const token = auth.getToken();
-
-    return (
-      <div>
-        <h1>Dashboard</h1>
-        <p>You get token {token}.</p>
-      </div>
-    );
-  }
-});
-
-const Login = React.createClass({
-  mixins: [History],
-
-  getInitialState() {
-    return {
-      error: false
-    };
-  },
-
-  handleSubmit(event) {
-    event.preventDefault();
-
-    const user = this.refs.user.value;
-    const pass = this.refs.pass.value;
-
-    auth.login(user, pass, (loggedIn) => {
-      if (!loggedIn) return this.setState({error:true});
-      
-      const {location} = this.props;
-
-      if (location.state && location.state.nextPathname) {
-        this.history.replaceState(null, location.state.nextPathname);
-      } else {
-        this.history.replaceState(null, '/');
-      }
-    });
-  },
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <label><input ref="user" placeholder="user" defaultValue="joe"/></label><br/>
-        <label><input ref="pass" placeholder="password"/></label> (404)<br/>
-        <button type="submit">login</button>
-        {this.state.error && (
-          <p>Bad user id or password</p>
-        )}
-      </form>
-    );
-  }
-});
-
-const About = React.createClass({
-  render() {
-    return (<h1>About</h1>);
-  }
-});
-
-const Logout = React.createClass({
-  componentDidMount() {
-    auth.logout();
-  },
-
-  render() {
-    return (<p>You are now logged out</p>);
   }
 });
 
@@ -124,13 +58,27 @@ function requireAuth(nextState, replaceState) {
   }
 }
 
+function requireAdmin(nextState, replaceState) {
+  if (!auth.loggedIn()) {
+    replaceState({nextPathname: nextState.location.pathname}, '/login');
+  } else if (!auth.canAdmin()) {
+    replaceState({nextPathname: nextState.location.pathname}, '/403');
+  }
+}
+
 render((
   <Router history={history}>
     <Route path="/" component={App}>
+      <IndexRoute component={Dashboard} onEnter={requireAuth}/>
+      <Route path="apis" component={Apis} onEnter={requireAuth}/>
+      <Route path="apps" component={Apps} onEnter={requireAuth}/>
+      <Route path="developers" component={Developers} onEnter={requireAuth}/>
+      <Route path="help" component={Help}/>
+      <Route path="admin" component={Admin} onEnter={requireAdmin}/>
+      <Route path="profile" component={Profile} onEnter={requireAuth}/>
       <Route path="login" component={Login}/>
       <Route path="logout" component={Logout}/>
-      <Route path="about" component={About}/>
-      <Route path="dashboard" component={Dashboard} onEnter={requireAuth}/>
+      <Route path="403" component={Http403}/>
     </Route>
   </Router>
 ), document.getElementById('app'));
