@@ -7,13 +7,12 @@ class Logout extends React.Component {
     auth.logout();
   }
 
+  componentWillUpdate() {
+    this.props.history.replace('/login');
+  }
+
   render() {
-    return (
-      <div>
-        <h1>Bye</h1>
-        <Link to="/login">login again</Link>
-      </div>
-    );
+    return null;
   }
 }
 

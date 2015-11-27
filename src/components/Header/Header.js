@@ -13,7 +13,11 @@ const Header = React.createClass({
         <Link to="/developers">Developers</Link>{' '}
         |{' '}
         <Link to="/help">Help</Link>{' '}
-        <Link to="/admin">Admin</Link>{' '}
+        {auth.canAdmin() ? (
+          <span>
+            <Link to="/admin">Admin</Link>{' '}
+          </span>
+        ) : ''}
         <Link to="/profile">{auth.getUser()?'['+auth.getUser()+']':'Profile'}</Link>{' '}
         |{' '}
         {auth.loggedIn() ? (

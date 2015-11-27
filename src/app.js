@@ -4,9 +4,7 @@ import {Router,Route,IndexRoute,Link,History} from 'react-router';
 import {createHashHistory,useBasename} from 'history';
 import auth from './auth';
 
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
-
+import Main from './components/Main/Main';
 import Dashboard from './components/Dashboard/Dashboard';
 import Apis from './components/Apis/Apis';
 import Apps from './components/Apps/Apps';
@@ -17,39 +15,10 @@ import Profile from './components/Profile/Profile';
 import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
 import Http403 from './components/Http403/Http403';
+import Http404 from './components/Http404/Http404';
 
 const history = useBasename(createHashHistory)({
-  basename: '/',
-  queryKey: false
-});
-
-const App = React.createClass({
-  getInitialState() {
-    return {
-      loggedIn: auth.loggedIn()
-    }
-  },
-
-  updateAuth(loggedIn) {
-    this.setState({
-      loggedIn: loggedIn
-    })
-  },
-
-  componentWillMount() {
-    auth.onChange = this.updateAuth;
-    auth.login();
-  },
-
-  render() {
-    return (
-      <div>
-        <Header/>
-        {this.props.children}
-        <Footer/>
-      </div>
-    );
-  }
+  basename: '/'
 });
 
 function requireAuth(nextState, replaceState) {
@@ -68,7 +37,7 @@ function requireAdmin(nextState, replaceState) {
 
 render((
   <Router history={history}>
-    <Route path="/" component={App}>
+    <Route path="/" component={Main}>
       <IndexRoute component={Dashboard} onEnter={requireAuth}/>
       <Route path="apis" component={Apis} onEnter={requireAuth}/>
       <Route path="apps" component={Apps} onEnter={requireAuth}/>
@@ -79,6 +48,7 @@ render((
       <Route path="login" component={Login}/>
       <Route path="logout" component={Logout}/>
       <Route path="403" component={Http403}/>
+      <Route path="*" component={Http404}/>
     </Route>
   </Router>
 ), document.getElementById('app'));

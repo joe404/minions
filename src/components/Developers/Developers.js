@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Dashboard = React.createClass({
+const Developers = React.createClass({
   render() {
-    return (<h1>Dashboard</h1>);
+    return (<h1>Developers</h1>);
   }
 });
 
-export default Dashboard;
+export default Developers;
