@@ -5,7 +5,7 @@ module.exports = {
   entry: "./app",
   output: {
     path: __dirname + "/build",
-    filename: "minions.js"
+    filename: "minions[hash].js"
   },
   module: {
     loaders: [
@@ -20,6 +20,14 @@ module.exports = {
       {
         test: /\.(png|jpg)$/,
         loader: 'url-loader?limit=8192'
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      },
+      {
+        test: /\.(eot|woff|woff2|ttf|svg)$/,
+        loader: 'file'
       }
     ]
   },
@@ -30,6 +38,7 @@ module.exports = {
     })
   ],
   devServer: {
-    contentBase: "./build"
+    contentBase: "./build",
+    host: "0.0.0.0"
   }
 }

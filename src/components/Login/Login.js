@@ -2,6 +2,9 @@ import React from 'react';
 import {History} from 'react-router';
 import auth from '../../auth.js';
 
+import {TextField, RaisedButton, Snackbar} from 'material-ui';
+import {Grid, Row, Col, Glyphicon} from 'react-bootstrap';
+
 const Login = React.createClass({
   mixins: [History],
 
@@ -14,11 +17,16 @@ const Login = React.createClass({
   handleSubmit(event) {
     event.preventDefault();
 
-    const user = this.refs.user.value;
-    const pass = this.refs.pass.value;
+    const user = this.refs.user.getValue();
+    const pass = this.refs.pass.getValue();
 
     auth.login(user, pass, (loggedIn) => {
-      if (!loggedIn) return this.setState({error:true});
+      if (!loggedIn) {
+        //return this.setState({error:true});
+        this.setState({error:true});
+        this.refs.snackbar.show();
+        return;
+      }
 
       const {location} = this.props;
       if (location.state && location.state.nextPathname) {
@@ -31,15 +39,28 @@ const Login = React.createClass({
 
   render() {
     return (
+      <Grid>
+        <Row>
+          <Col className="text-center">
+            <h1>Welcome</h1>
+
       <form onSubmit={this.handleSubmit}>
-        <h1>Welcome</h1>
-        <label><input ref="user" placeholder="user id" defaultValue="joe"/></label> (hint: joe/admin)<br/>
-        <label><input type="password" ref="pass" placeholder="password" defaultValue="404"/></label> (hint: 404)<br/>
+        <TextField ref="user" hintText="joe or admin" floatingLabelText="User ID"/><br/>
+        <TextField ref="pass" hintText="404" floatingLabelText="Password" type="password"/><br/>
         {this.state.error && (
-          <p style={{color:'red'}}>Bad user id or password.</p>
+          <Snackbar
+            ref="snackbar"
+            message="Bad user id or password."
+            bodyStyle={{backgroundColor:'grey'}}
+          />
         )}
-        <button type="submit">Login</button>
+        <br/><br/>
+        <RaisedButton label="Login" type="submit"/>
       </form>
+
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 });
