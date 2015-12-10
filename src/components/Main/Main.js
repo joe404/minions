@@ -4,7 +4,7 @@ import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Dashboard from '../Dashboard/Dashboard';
 
-const Main = React.createClass({
+class Main extends React.Component {
   render() {
     return (
       <div>
@@ -16,6 +16,6 @@ const Main = React.createClass({
       </div>
     );
   }
-});
+}
 
 export default Main;

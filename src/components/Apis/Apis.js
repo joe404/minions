@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Apis = React.createClass({
+class Apis extends React.Component {
   render() {
     return (<h1>APIs</h1>);
   }
-});
+}
 
 export default Apis;

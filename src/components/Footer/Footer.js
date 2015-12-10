@@ -1,7 +1,7 @@
 import React from 'react';
 import footercss from './docs.css';
 
-const Footer = React.createClass({
+class Footer extends React.Component {
   render() {
     return (
       <footer className="bs-docs-footer">
@@ -18,6 +18,6 @@ const Footer = React.createClass({
       </footer>
     );
   }
-});
+}
 
 export default Footer;

@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Help = React.createClass({
+class Help extends React.Component {
   render() {
     return (<h1>Help</h1>);
   }
-});
+}
 
 export default Help;

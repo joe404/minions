@@ -5,6 +5,7 @@ import auth from '../../auth.js';
 import {TextField, RaisedButton, Snackbar} from 'material-ui';
 import {Grid, Row, Col, Glyphicon} from 'react-bootstrap';
 
+//TODO: React Mixins Are Dead in ES6 http://segmentfault.com/a/1190000002884524
 const Login = React.createClass({
   mixins: [History],
 

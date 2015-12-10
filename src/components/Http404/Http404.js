@@ -1,7 +1,7 @@
 import React from 'react';
 import jpg404 from './404.jpg'; //or <img src={require('./404.jpg')} ...
 
-const Http404 = React.createClass({
+class Http404 extends React.Component {
   render() {
     return (
       <div>
@@ -10,6 +10,6 @@ const Http404 = React.createClass({
       </div>
     );
   }
-});
+}
 
 export default Http404;

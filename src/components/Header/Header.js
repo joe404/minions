@@ -36,7 +36,7 @@ const Header = React.createClass({
 
 //material-ui appbar is not bootstrap navbar.
 import {Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon} from 'react-bootstrap';
-const Header = React.createClass({
+class Header extends React.Component {
   render() {
     return (
       <Navbar inverse staticTop fluid>
@@ -70,7 +70,6 @@ const Header = React.createClass({
       </Navbar>
     );
   }
-});
-
+}
 
 export default Header;

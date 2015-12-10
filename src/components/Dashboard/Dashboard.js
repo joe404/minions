@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Dashboard = React.createClass({
+class Dashboard extends React.Component {
   render() {
     return (<h1>Dashboard</h1>);
   }
-});
+}
 
 export default Dashboard;
