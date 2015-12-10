@@ -1,3 +1,5 @@
+//ref: https://github.com/rackt/react-router/blob/master/examples/auth-flow/auth.js
+
 module.exports = {
   login(user, pass, cb) {
     cb = arguments[arguments.length - 1]; //?

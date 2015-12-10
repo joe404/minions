@@ -6,14 +6,47 @@ var StatsWebpackPlugin = require('stats-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = function(options) {
+  var entry;
+  if (options.devServer) {
+    //ref: http://gaearon.github.io/react-hot-loader/getstarted/
+    entry = [
+      'webpack-dev-server/client?http://0.0.0.0:8080',
+      'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
+      './client/app.jsx'
+    ];
+  } else {
+    entry = {
+      minions: './client/app.jsx'
+    };
+  }
+
+  var output = {
+    path: path.join(__dirname, 'build/public'),
+    publicPath: (options.devServer ? 'http://localhost:8080/' : '/_assets/'),
+    filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : ''),
+    chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
+    sourceMapFilename: '[file].map',
+    pathinfo: options.debug
+  };
+
+  var jsLoaders = ['babel?presets[]=react,presets[]=es2015'];
+  var jsxLoaders = [];
+  if (options.devServer) jsxLoaders.push('react-hot');
+  jsxLoaders.push('babel?presets[]=react,presets[]=es2015'); //ref: https://github.com/babel/babel-loader#options
   var loaders = [
     {
       test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel',
-      query: {
-        presets: ['es2015', 'react']
-      }
+      include: [
+        path.resolve(__dirname, 'client')
+      ],
+      loaders: jsLoaders
+    },
+    {
+      test: /\.jsx$/,
+      include: [
+        path.resolve(__dirname, 'client')
+      ],
+      loaders: jsxLoaders
     },
     {
       test: /\.(png|jpg|jpeg|gif|svg)$/,
@@ -34,25 +67,23 @@ module.exports = function(options) {
     }
   ];
 
-  var excludeFromStats =  [
-        /node_modules[\\\/]react(-router)?[\\\/]/
+  var excludeFromStats = [
+    // /node_modules[\\\/]react(-router)?[\\\/]/
   ];
   var plugins = [
-    /*
-    new webpack.PrefetchPlugin('react'),
-    new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment'),
-    new StatsWebpackPlugin('stats.json', {
-      chunkModules: true,
-      exclude: excludeFromStats
-    }),
-    */
     new HtmlWebpackPlugin({
       inject: true,
-      template: 'src/index.html'
+      template: 'client/index.html'
+    }),
+    new webpack.PrefetchPlugin('react'), //ref: http://stackoverflow.com/questions/32923085/how-to-optimize-webpacks-build-time-using-prefetchplugin-analyse-tool
+    new webpack.PrefetchPlugin('react/lib/ReactComponentBrowserEnvironment'),
+    new StatsWebpackPlugin('stats.json', { // analyse stats.json on http://webpack.github.io/analyse/#hints
+      chunkModules: true,
+      exclude: excludeFromStats
     })
   ];
-  if (options.commonsChunk) {
-    plugins.push(new webpack.optimize.CommonsChunkPlugin('commons', 'commons.js' + (options.longTermCaching ? '?[chunkhash]' : '')));
+  if(options.commonsChunk) {
+    plugins.push(new webpack.optimize.CommonsChunkPlugin("commons", "commons.js" + (options.longTermCaching && !options.prerender ? "?[chunkhash]" : "")));
   }
   if (options.minimize) {
     plugins.push(
@@ -70,30 +101,20 @@ module.exports = function(options) {
       new webpack.NoErrorsPlugin()
     );
   }
-  console.log(plugins);
 
   return {
-    context: path.join(__dirname, 'src'),
-    entry: {
-      minions: './app'
-    },
-    output: {
-      path: path.join(__dirname, 'build', 'public'),
-      //publicPath: options.devServer ? 'http://localhost:8080/' : '/_assets/';
-      //filename: '[name].js' + (options.longTermCaching ? '?[chunkhash]' : '') + '.js',
-      filename: '[name]' + (options.longTermCaching ? '.[chunkhash]' : '') + '.js',
-      //chunkFilename: (options.devServer ? '[id].js' : '[name].js') + (options.longTermCaching ? '?[chunkhash]' : ''),
-      sourceMapFilename: 'debug/[file].map',
-      pathinfo: options.debug
-    },
+    entry: entry,
+    output: output,
     module: {
       loaders: loaders
+    },
+    resolve: {
+      extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx"]
     },
     plugins: plugins,
     debug: options.debug,
     devtool: options.devtool,
     devServer: {
-      host: "0.0.0.0",
       stats: {
         cached: false,
         exclude: excludeFromStats
@@ -101,3 +122,4 @@ module.exports = function(options) {
     }
   };
 };
+

@@ -1,4 +1,8 @@
-module.exports = require('./make-webpack-config')({
-  longTermCaching: true,
-  minimize: true
-});
+module.exports = [
+  require('./make-webpack-config')({
+    //commonsChunk: true,
+    longTermCaching: true,
+    minimize: true,
+    devtool: 'source-map'
+  })
+];
